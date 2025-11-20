@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Таблица профессий</title>
+  <style>
+    /* Существующие стили остаются без изменений */
+    :root {
+      --bg-primary: #f7f9fc;
+      --bg-secondary: #dfe7f3;
+      --bg-card: #ffffff;
+      --bg-control: #fafbfc;
+      --bg-disabled: #fdf0ef;
+      --text-primary: #2c3e50;
+      --text-secondary: #6c7a89;
+      --text-inverted: #ffffff;
+      --border: #e3e7ed;
+      --border-hover: #d0d7de;
+      --accent-primary: #3498db;
+      --accent-success: #27ae60;
+      --accent-warning: #f1c40f;
+      --accent-danger: #e74c3c;
+      --shadow: rgba(0, 0, 0, 0.05);
+      --shadow-hover: rgba(0, 0, 0, 0.08);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #1a1d23;
+      --bg-secondary: #2d3748;
+      --bg-card: #2a2f3b;
+      --bg-control: #3a4252;
+      --bg-disabled: #4a2a2a;
+      --text-primary: #e2e8f0;
+      --text-secondary: #a0aec0;
+      --text-inverted: #2d3748;
+      --border: #4a5568;
+      --border-hover: #718096;
+      --accent-primary: #4299e1;
+      --accent-success: #48bb78;
+      --accent-warning: #ed8936;
+      --accent-danger: #f56565;
+      --shadow: rgba(0, 0, 0, 0.2);
+      --shadow-hover: rgba(0, 0, 0, 0.3);
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      line-height: 1.5;
+      transition: all 0.3s ease;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: var(--bg-card);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px var(--shadow);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: var(--bg-control);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent-primary);
+      color: var(--text-inverted);
+      border-color: var(--accent-primary);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .control-group,
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-control);
+      transition: all 0.2s ease;
+    }
+
+    .control-group.hidden {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .control-group label,
+    .toggle-label {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    .control-group input {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 15px;
+      width: 70px;
+      text-align: center;
+      transition: border 0.2s;
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .control-group input:focus {
+      border-color: var(--accent-primary);
+      outline: none;
+    }
+
+    .toggle {
+      position: relative;
+      width: 48px;
+      height: 24px;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--border);
+      transition: .3s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked+.slider {
+      background-color: var(--accent-primary);
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(24px);
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-reset {
+      background: var(--accent-danger);
+      color: white;
+    }
+
+    .btn-reset:hover {
+      background: #c0392b;
+    }
+
+    .btn-primary {
+      background: var(--accent-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2980b9;
+    }
+
+    .btn-secondary {
+      background: var(--bg-control);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .warning {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px auto;
+      max-width: 600px;
+      text-align: center;
+      color: #8d6e63;
+      font-size: 14px;
+      display: none;
+    }
+
+    [data-theme="dark"] .warning {
+      background: #5d4037;
+      border-color: #8d6e63;
+      color: #ffccbc;
+    }
+
+    .instructions {
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      border-left: 4px solid var(--accent-primary);
+      background: var(--bg-control);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    /* Стили для управления персонажами */
+    .players-management {
+      margin-bottom: 20px;
+      padding: 16px;
+      background: var(--bg-card);
+      border-radius: 12px;
+      box-shadow: 0 2px 10px var(--shadow);
+    }
+
+    .players-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .players-controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    .players-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .player-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--bg-control);
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .player-item.active {
+      border-color: var(--accent-primary);
+    }
+
+    .player-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .player-name {
+      font-weight: 600;
+      font-size: 14px;
+      cursor: text;
+      min-width: 100px;
+    }
+
+    .player-name-input {
+      background: transparent;
+      border: none;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-primary);
+      width: 100px;
+      outline: none;
+    }
+
+    .player-count {
+      background: var(--accent-primary);
+      color: white;
+      border-radius: 10px;
+      padding: 2px 6px;
+      font-size: 12px;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    /* Основная таблица профессий */
+    .categories-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+      border-top: 2px dashed var(--accent-primary);
+      padding-top: 16px;
+    }
+
+    .category {
+      background: var(--bg-card);
+      border-radius: 12px;
+      box-shadow: 0 2px 10px var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .category:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px var(--shadow-hover);
+    }
+
+    .category-header {
+      background: var(--accent-primary);
+      color: var(--text-inverted);
+      padding: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .prof-list {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .prof-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-control);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      opacity: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .prof-item.hidden {
+      opacity: 0;
+      transform: scale(0.98);
+      height: 0;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      border: none;
+    }
+
+    .prof-item:hover {
+      background: var(--bg-primary);
+      border-color: var(--border-hover);
+    }
+
+    .prof-item.selected {
+      border-color: var(--accent-success);
+      background: var(--accent-success);
+      color: var(--text-inverted);
+    }
+
+    .prof-item.disabled {
+      opacity: 0.6;
+      background: var(--bg-disabled);
+      border-color: var(--accent-danger);
+      cursor: not-allowed;
+    }
+
+    .prof-item.server-prof {
+      background: var(--accent-warning);
+      border-color: var(--accent-warning);
+      color: var(--text-inverted);
+    }
+
+    .prof-item.conflict {
+      position: relative;
+    }
+
+    /* ИЗМЕНЕНИЕ: Убираем градиент для профессий, выбранных другими персонажами */
+    .prof-item.other-player-selected {
+      border-color: var(--accent-danger);
+      background: var(--accent-danger);
+      color: var(--text-inverted);
+    }
+
+    /* ИЗМЕНЕНИЕ: Убираем оверлеи для профессий, выбранных другими персонажами */
+    .prof-item.other-player-selected .conflict-overlay,
+    .prof-item.other-player-selected .gradient-overlay {
+      display: none !important;
+    }
+
+    .conflict-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      opacity: 0.3;
+    }
+
+    .gradient-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      opacity: 0.4;
+    }
+
+    .prof-item-content {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      position: relative;
+      z-index: 2;
+    }
+
+    .conflict-indicators {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+    }
+
+    .conflict-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .conflict-tooltip {
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 12px;
+      white-space: nowrap;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .conflict-indicator:hover .conflict-tooltip {
+      opacity: 1;
+    }
+
+    .day-badge {
+      font-weight: 700;
+      font-size: 14px;
+      min-width: 20px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    [data-theme="dark"] .day-badge {
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .stage-1 {
+      color: var(--accent-success);
+    }
+
+    .stage-2 {
+      color: var(--accent-warning);
+    }
+
+    .stage-3 {
+      color: var(--accent-danger);
+    }
+
+    .prof-item.selected .day-badge {
+      color: var(--text-inverted) !important;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .server-professions {
+      background: var(--bg-card);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px var(--shadow);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .server-professions h2 {
+      font-size: 18px;
+      margin: 0 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-primary);
+    }
+
+    .server-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .server-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-control);
+      transition: all 0.2s;
+      color: var(--text-primary);
+    }
+
+    .server-item:hover {
+      background: var(--bg-primary);
+    }
+
+    .server-item.selected {
+      border-color: var(--accent-warning);
+      font-weight: 600;
+      background: var(--accent-warning);
+      color: var(--text-inverted);
+    }
+
+    .disabled-list {
+      margin-top: 20px;
+      padding: 16px;
+      border: 1px dashed var(--accent-danger);
+      border-radius: 12px;
+      background: var(--bg-disabled);
+    }
+
+    .disabled-list h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      color: var(--accent-danger);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .disabled-list ul {
+      margin: 0;
+      padding-left: 18px;
+      columns: 2;
+    }
+
+    .disabled-list li {
+      margin-bottom: 4px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .counter,
+    .server-counter {
+      display: inline-block;
+      background: var(--accent-danger);
+      color: white;
+      border-radius: 10px;
+      padding: 2px 8px;
+      font-size: 13px;
+    }
+
+    /* Стили для туториала */
+    .tutorial-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 10000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .tutorial-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .tutorial-modal {
+      background: var(--bg-card);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+
+    .tutorial-overlay.active .tutorial-modal {
+      transform: translateY(0);
+    }
+
+    .tutorial-header {
+      padding: 20px 24px 0;
+      text-align: center;
+    }
+
+    .tutorial-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 8px;
+      color: var(--text-primary);
+    }
+
+    .tutorial-subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .tutorial-content {
+      padding: 20px 24px;
+    }
+
+    .tutorial-step {
+      display: none;
+    }
+
+    .tutorial-step.active {
+      display: block;
+    }
+
+    .tutorial-step h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      color: var(--accent-primary);
+    }
+
+    .tutorial-step p {
+      margin: 0 0 16px;
+      line-height: 1.6;
+    }
+
+    .tutorial-feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 12px;
+      background: var(--bg-control);
+      border-radius: 8px;
+      border-left: 4px solid var(--accent-primary);
+    }
+
+    .tutorial-feature-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .tutorial-feature-text {
+      flex: 1;
+    }
+
+    .tutorial-highlight {
+      background: var(--accent-warning);
+      color: var(--text-inverted);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .tutorial-footer {
+      padding: 16px 24px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .tutorial-progress {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .tutorial-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .tutorial-skip {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+
+    .tutorial-skip:hover {
+      background: var(--bg-control);
+    }
+
+    .tutorial-next {
+      background: var(--accent-primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .tutorial-next:hover {
+      background: #2980b9;
+    }
+
+    .tutorial-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .tutorial-close:hover {
+      background: var(--bg-control);
+    }
+
+    .tutorial-highlight-element {
+      position: relative;
+      z-index: 10001;
+      box-shadow: 0 0 0 4px var(--accent-primary) !important;
+      border-radius: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .theme-toggle {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin: 10px auto;
+        justify-content: center;
+      }
+
+      .disabled-list ul {
+        columns: 1;
+      }
+
+      .players-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+      }
+
+      .tutorial-modal {
+        width: 95%;
+        margin: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>Выберите профессии</h1>
+      <div class="subtitle">Выберите профессии, которые хотите освоить. Конфликтующие профессии будут подсвечиваться.
+      </div>
+      <button class="theme-toggle" id="themeToggle"><span>🌙</span> Тёмная тема</button>
+      <div class="controls">
+        <div class="control-group" id="dayControlGroup">
+          <label for="serverDay">Текущий день сервера:</label>
+          <input type="number" id="serverDay" min="0" max="100" placeholder="0">
+        </div>
+        <div class="toggle-group">
+          <span class="toggle-label">Показать все профессии</span>
+          <label class="toggle">
+            <input type="checkbox" id="showAllToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <button class="btn btn-reset" id="resetBtn">Сбросить выбор</button>
+      </div>
+      <div class="warning" id="warningMessage">
+        <strong>Внимание!</strong> Включен режим отображения всех профессии. Логика конфликтов работает, но фильтрация
+        по дню отключена.
+      </div>
+    </header>
+
+    <!-- Управление персонажами -->
+    <div class="players-management">
+      <div class="players-header">
+        <h2>Управление персонажами <span class="counter" id="playersCount">1</span></h2>
+        <div class="players-controls">
+          <button class="btn btn-primary" id="addPlayerBtn">+ Добавить</button>
+          <button class="btn btn-reset" id="removePlayerBtn">- Удалить</button>
+        </div>
+      </div>
+      <div class="players-list" id="playersList"></div>
+    </div>
+
+    <div class="instructions">
+      <strong>Основная таблица:</strong> Выбирайте профессии для каждого персонажа. Конфликтующие профессии
+      подсвечиваются цветами соответствующих персонажей. Цвет заливки показывает, с какими персонажами есть конфликты.
+      <strong>Конфликтующие профессии блокируются для выбора текущим персонажем.</strong>
+    </div>
+    <div class="categories-container" id="profContainer"></div>
+
+    <div class="server-professions">
+      <h2>Профессии, которые есть на сервере <span class="server-counter" id="serverCount">0</span></h2>
+      <div class="server-list" id="serverList"></div>
+      <div style="font-size:13px; color:var(--text-secondary); margin-top:6px;">
+        Отметьте профессии, которые уже есть на сервере (для корректного учета конфликтов).
+      </div>
+    </div>
+
+    <div class="disabled-list" id="disabledBlock" style="display:none;">
+      <h3><span class="counter" id="disabledCount">0</span> Заблокированные профессии для текущего персонажа:</h3>
+      <ul id="disabledList"></ul>
+    </div>
+  </div>
+
+  <!-- Туториал -->
+  <div class="tutorial-overlay" id="tutorialOverlay">
+    <div class="tutorial-modal">
+      <button class="tutorial-close" id="tutorialClose">×</button>
+      <div class="tutorial-header">
+        <h2 class="tutorial-title">Добро пожаловать в планировщик профессий!</h2>
+        <div class="tutorial-subtitle">Давайте познакомимся с основными функциями</div>
+      </div>
+      <div class="tutorial-content">
+        <div class="tutorial-step active" id="step1">
+          <h3>Основная идея</h3>
+          <p>Этот инструмент поможет вам планировать развитие профессий для нескольких персонажей, избегая конфликтов
+            между ними.</p>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">🎯</div>
+            <div class="tutorial-feature-text">
+              <strong>Конфликт профессий</strong> - когда одна профессия мешает освоить другую
+            </div>
+          </div>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">👥</div>
+            <div class="tutorial-feature-text">
+              <strong>Мультиперсонажность</strong> - управляйте несколькими персонажами одновременно
+            </div>
+          </div>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">📅</div>
+            <div class="tutorial-feature-text">
+              <strong>Фильтрация по дням</strong> - показывайте только доступные профессии
+            </div>
+          </div>
+        </div>
+
+        <div class="tutorial-step" id="step2">
+          <h3>Управление персонажами</h3>
+          <p>Вы можете управлять несколькими персонажами. Каждый имеет свой цвет для визуального отличия.</p>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">➕</div>
+            <div class="tutorial-feature-text">
+              <strong>Добавьте персонажа</strong> - чтобы планировать профессии для другого героя
+            </div>
+          </div>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">✏️</div>
+            <div class="tutorial-feature-text">
+              <strong>Дважды кликните по имени</strong> - чтобы изменить его
+            </div>
+          </div>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">🎨</div>
+            <div class="tutorial-feature-text">
+              <strong>Цветные индикаторы</strong> - показывают, кому принадлежат выбранные профессии
+            </div>
+          </div>
+        </div>
+
+        <div class="tutorial-step" id="step3">
+          <h3>Фильтрация по дням сервера</h3>
+          <p>Профессии открываются в определенные дни. Вы можете фильтровать их по доступности.</p>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">📅</div>
+            <div class="tutorial-feature-text">
+              <strong>Укажите текущий день сервера</strong> - чтобы видеть только доступные профессии
+            </div>
+          </div>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">🔢</div>
+            <div class="tutorial-feature-text">
+              <strong>Цифры на профессиях</strong> - показывают день, когда они открываются
+            </div>
+          </div>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">🌈</div>
+            <div class="tutorial-feature-text">
+              <strong>Цвета цифр</strong> - зеленые (ранние), желтые (средние), красные (поздние)
+            </div>
+          </div>
+        </div>
+
+        <div class="tutorial-step" id="step4">
+          <h3>Конфликты и блокировки</h3>
+          <p>Система автоматически определяет конфликтующие профессии и блокирует их выбор.</p>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">🚫</div>
+            <div class="tutorial-feature-text">
+              <strong>Заблокированные профессии</strong> - выделяются красным и не могут быть выбраны
+            </div>
+          </div>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">🎨</div>
+            <div class="tutorial-feature-text">
+              <strong>Цветные оверлеи</strong> - показывают, с каким персонажем конфликт
+            </div>
+          </div>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">📋</div>
+            <div class="tutorial-feature-text">
+              <strong>Список заблокированных</strong> - внизу страницы показывается полный список
+            </div>
+          </div>
+        </div>
+
+        <div class="tutorial-step" id="step5">
+          <h3>Серверные профессии</h3>
+          <p>Отмечайте профессии, которые уже есть на сервере, чтобы избежать их повторного выбора.</p>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">✅</div>
+            <div class="tutorial-feature-text">
+              <strong>Отметьте профессии на сервере</strong> - они станут желтыми и недоступными для выбора
+            </div>
+          </div>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">🔄</div>
+            <div class="tutorial-feature-text">
+              <strong>Автоматический учет</strong> - система учитывает их при проверке конфликтов
+            </div>
+          </div>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">👀</div>
+            <div class="tutorial-feature-text">
+              <strong>Быстрый обзор</strong> - счётчик показывает сколько профессий уже на сервере
+            </div>
+          </div>
+        </div>
+
+        <div class="tutorial-step" id="step6">
+          <h3>Готовы начать!</h3>
+          <p>Теперь вы знаете все основные функции планировщика профессий.</p>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">💡</div>
+            <div class="tutorial-feature-text">
+              <strong>Совет:</strong> Начните с ввода текущего дня сервера
+            </div>
+          </div>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">💡</div>
+            <div class="tutorial-feature-text">
+              <strong>Совет:</strong> Отметьте профессии, которые уже есть на сервере
+            </div>
+          </div>
+          <div class="tutorial-feature">
+            <div class="tutorial-feature-icon">💡</div>
+            <div class="tutorial-feature-text">
+              <strong>Совет:</strong> Добавьте всех своих персонажей перед планированием
+            </div>
+          </div>
+          <p style="margin-top: 16px; text-align: center; font-weight: 600; color: var(--accent-primary);">
+            Приятного использования! 🎮
+          </p>
+        </div>
+      </div>
+      <div class="tutorial-footer">
+        <div class="tutorial-progress" id="tutorialProgress">Шаг 1 из 6</div>
+        <div class="tutorial-buttons">
+          <button class="tutorial-skip" id="tutorialSkip">Пропустить</button>
+          <button class="tutorial-next" id="tutorialNext">Далее</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== Данные ======
+    const categories = {
+      "Охота и разделка": ["охота", "разделка"],
+      "Фермерство": ["удобрения", "Мельник", "собирашка", "фермер"],
+      "Техника и производство": ["мех", "Инжа", "промка", "Электро"],
+      "Горняк": ["Гончар", "Горняк", "Каменка", "Стекло", "Прод каменка"],
+      "Металлургия": ["выплавка", "ковка", "Прод выплавка"],
+      "Лесоруб": ["Заготовка", "Корабел", "Плотник", "Бумага", "Композиты"],
+      "Кулинария": ["выпечка", "Готовка", "готовка на костре", "Передовая кулинарка", "прод выпечка", "прод кулинария"],
+      "Портняжное дело": ["Ткань"],
+      "Нефтедобыча и покраска": ["нефть", "Маляр"]
+    };
+
+    // ======= КОНФЛИКТЫ (из Excel) =======
+    const conflicts = {
+      "Плотник": ["Заготовка", "Мельник", "Стекло", "выплавка"],
+      "Композиты": ["Заготовка", "Электро", "мех", "нефть"],
+      "Корабел": ["Заготовка", "промка", "мех", "Прод выплавка", "выплавка"],
+      "Заготовка": ["Плотник", "Композиты", "Корабел", "Бумага", "Инжа", "удобрения", "Гончар", "ковка", "Ткань"],
+      "Бумага": ["Заготовка", "Маляр", "Стекло", "Ткань"],
+      "прод выпечка": ["прод кулинария", "готовка", "фермер", "собирашка", "Мельник", "разделка"],
+      "прод кулинария": ["прод выпечка", "выпечка", "фермер", "собирашка", "Мельник", "разделка"],
+      "выпечка": ["прод кулинария", "готовка", "фермер", "собирашка", "Мельник", "разделка"],
+      "готовка на костре": ["фермер", "собирашка", "Мельник", "разделка", "охота"],
+      "Готовка": ["прод выпечка", "выпечка", "фермер", "собирашка", "Мельник", "разделка"],
+      "Передовая кулинарка": ["нефть", "фермер", "собирашка", "Мельник", "разделка", "охота"],
+      "Инжа": ["Заготовка", "Каменка", "Горняк", "выплавка", "Ткань"],
+      "Электро": ["Композиты", "промка", "мех", "нефть", "Прод выплавка", "выплавка"],
+      "промка": ["Корабел", "Электро", "мех", "нефть", "Прод выплавка", "выплавка"],
+      "мех": ["Композиты", "Корабел", "Электро", "промка", "разделка", "Стекло", "Прод выплавка", "ковка", "выплавка"],
+      "Маляр": ["Бумага", "нефть", "Мельник", "Стекло", "Гончар", "выплавка", "Ткань"],
+      "нефть": ["Композиты", "Передовая кулинарка", "Электро", "промка", "Маляр", "разделка", "Стекло", "Прод выплавка", "ковка", "выплавка"],
+      "фермер": ["прод выпечка", "прод кулинария", "выпечка", "готовка на костре", "готовка", "удобрения", "Мельник", "выплавка", "Ткань"],
+      "удобрения": ["Заготовка", "фермер", "собирашка", "разделка"],
+      "собирашка": ["прод выпечка", "прод кулинария", "выпечка", "готовка на костре", "готовка", "удобрения", "Мельник", "выплавка", "Ткань"],
+      "Мельник": ["Плотник", "прод выпечка", "прод кулинария", "выпечка", "готовка на костре", "готовка", "Маляр", "фермер", "собирашка"],
+      "разделка": ["прод выпечка", "прод кулинария", "выпечка", "готовка на костре", "готовка", "нефть", "удобрения", "охота", "ковка", "Ткань"],
+      "охота": ["выпечка", "Готовка", "разделка"],
+      "Прод каменка": ["Горняк", "Прод выплавка"],
+      "Стекло": ["Плотник", "Бумага", "мех", "Маляр", "нефть", "Горняк", "Прод выплавка", "ковка"],
+      "Каменка": ["Инжа", "Горняк", "Гончар"],
+      "Горняк": ["Инжа", "Прод каменка", "Стекло", "Каменка", "Гончар", "Прод выплавка", "выплавка"],
+      "Гончар": ["Заготовка", "Маляр", "Каменка", "Горняк", "Прод выплавка", "ковка", "выплавка"],
+      "Прод выплавка": ["Корабел", "Электро", "промка", "мех", "нефть", "Прод каменка", "Стекло", "Горняк", "Гончар", "ковка", "выплавка"],
+      "ковка": ["Заготовка", "мех", "нефть", "разделка", "Стекло", "Гончар", "Прод выплавка", "выплавка"],
+      "выплавка": ["Плотник", "Корабел", "Инжа", "Электро", "промка", "мех", "Маляр", "нефть", "фермер", "собирашка", "Горняк", "Гончар", "Прод выплавка", "ковка"],
+      "Ткань": ["Заготовка", "Бумага", "Инжа", "Маляр", "фермер", "собирашка", "разделка"]
+    };
+
+    // Данные о днях открытия профессий (актуальные)
+    const professionDays = {
+      "охота": 0,
+      "разделка": 1,
+      "удобрения": 5,
+      "Мельник": 5,
+      "собирашка": 0,
+      "фермер": 1,
+      "мех": 3,
+      "Инжа": 5,
+      "промка": 15,
+      "Электро": 15,
+      "Гончар": 5,
+      "Горняк": 0,
+      "Каменка": 1,
+      "Стекло": 5,
+      "Прод каменка": 15,
+      "выплавка": 3,
+      "ковка": 3,
+      "Прод выплавка": 15,
+      "Заготовка": 0,
+      "Корабел": 1,
+      "Плотник": 1,
+      "Бумага": 5,
+      "Композиты": 15,
+      "выпечка": 5,
+      "Готовка": 5,
+      "готовка на костре": 0,
+      "Передовая кулинарка": 15,
+      "прод выпечка": 15,
+      "прод кулинария": 15,
+      "Ткань": 1,
+      "нефть": 15,
+      "Маляр": 5
+    };
+
+    // Цвета для персонажей
+    const playerColors = [
+      "#3498db", "#e74c3c", "#2ecc71", "#f39c12",
+      "#9b59b6", "#1abc9c", "#d35400", "#34495e"
+    ];
+
+    // ====== Глобальные переменные ======
+    const container = document.getElementById("profContainer");
+    const serverList = document.getElementById("serverList");
+    const serverCount = document.getElementById("serverCount");
+    const disabledBlock = document.getElementById("disabledBlock");
+    const disabledList = document.getElementById("disabledList");
+    const disabledCount = document.getElementById("disabledCount");
+    const serverDayInput = document.getElementById("serverDay");
+    const showAllToggle = document.getElementById("showAllToggle");
+    const resetBtn = document.getElementById("resetBtn");
+    const warningMessage = document.getElementById("warningMessage");
+    const dayControlGroup = document.getElementById("dayControlGroup");
+    const themeToggle = document.getElementById("themeToggle");
+    const playersList = document.getElementById("playersList");
+    const playersCount = document.getElementById("playersCount");
+    const addPlayerBtn = document.getElementById("addPlayerBtn");
+    const removePlayerBtn = document.getElementById("removePlayerBtn");
+
+    // Элементы туториала
+    const tutorialOverlay = document.getElementById("tutorialOverlay");
+    const tutorialClose = document.getElementById("tutorialClose");
+    const tutorialSkip = document.getElementById("tutorialSkip");
+    const tutorialNext = document.getElementById("tutorialNext");
+    const tutorialProgress = document.getElementById("tutorialProgress");
+
+    // Состояние приложения
+    let players = [
+      { id: 1, name: "Персонаж 1", color: playerColors[0], professions: [] }
+    ];
+    let activePlayerId = 1;
+
+    // Состояние туториала
+    let currentTutorialStep = 1;
+    const totalTutorialSteps = 6;
+
+    // ====== Функции туториала ======
+    function showTutorial() {
+      // Проверяем, показывался ли уже туториал
+      const tutorialShown = localStorage.getItem('tutorialShown');
+      if (tutorialShown) return;
+
+      tutorialOverlay.classList.add('active');
+      updateTutorialStep();
+    }
+
+    function hideTutorial() {
+      tutorialOverlay.classList.remove('active');
+      localStorage.setItem('tutorialShown', 'true');
+    }
+
+    function nextTutorialStep() {
+      if (currentTutorialStep < totalTutorialSteps) {
+        currentTutorialStep++;
+        updateTutorialStep();
+      } else {
+        hideTutorial();
+      }
+    }
+
+    function updateTutorialStep() {
+      // Скрываем все шаги
+      document.querySelectorAll('.tutorial-step').forEach(step => {
+        step.classList.remove('active');
+      });
+
+      // Показываем текущий шаг
+      const currentStep = document.getElementById(`step${currentTutorialStep}`);
+      if (currentStep) {
+        currentStep.classList.add('active');
+      }
+
+      // Обновляем прогресс
+      tutorialProgress.textContent = `Шаг ${currentTutorialStep} из ${totalTutorialSteps}`;
+
+      // Обновляем текст кнопки на последнем шаге
+      if (currentTutorialStep === totalTutorialSteps) {
+        tutorialNext.textContent = 'Завершить';
+      } else {
+        tutorialNext.textContent = 'Далее';
+      }
+
+      // Демонстрация функций на определенных шагах
+      if (currentTutorialStep === 3) {
+        // На шаге 3 показываем фильтрацию по дням
+        serverDayInput.value = "5";
+        setTimeout(() => {
+          refreshProfessions();
+        }, 300);
+      } else if (currentTutorialStep === 4) {
+        // На шаге 4 показываем конфликты
+        serverDayInput.value = "";
+        setTimeout(() => {
+          refreshProfessions();
+        }, 300);
+      }
+    }
+
+    function setupTutorialEventListeners() {
+      tutorialClose.addEventListener('click', hideTutorial);
+      tutorialSkip.addEventListener('click', hideTutorial);
+      tutorialNext.addEventListener('click', nextTutorialStep);
+
+      // Закрытие по клику вне модального окна
+      tutorialOverlay.addEventListener('click', (e) => {
+        if (e.target === tutorialOverlay) {
+          hideTutorial();
+        }
+      });
+    }
+
+    // ====== Функции сохранения и загрузки ======
+    function saveState() {
+      const state = {
+        serverSelections: Array.from(serverList.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value),
+        serverDay: serverDayInput.value.trim(),
+        showAll: showAllToggle.checked,
+        theme: document.body.getAttribute('data-theme') || 'light',
+        players: players,
+        activePlayerId: activePlayerId
+      };
+
+      localStorage.setItem('professionsState', JSON.stringify(state));
+    }
+
+    function loadState() {
+      const saved = localStorage.getItem('professionsState');
+      if (!saved) return;
+
+      const state = JSON.parse(saved);
+
+      if (state.serverDay !== undefined) serverDayInput.value = state.serverDay;
+      if (state.showAll !== undefined) showAllToggle.checked = state.showAll;
+      if (state.theme) {
+        document.body.setAttribute('data-theme', state.theme);
+      }
+      if (state.players) players = state.players;
+      if (state.activePlayerId) activePlayerId = state.activePlayerId;
+
+      updateThemeButton();
+      renderPlayers();
+
+      setTimeout(() => {
+        if (state.serverSelections) {
+          serverList.querySelectorAll("input[type='checkbox']").forEach(cb => {
+            cb.checked = state.serverSelections.includes(cb.value);
+          });
+        }
+
+        refreshProfessions();
+      }, 0);
+    }
+
+    // ====== Управление персонажами ======
+    function renderPlayers() {
+      playersList.innerHTML = "";
+      playersCount.textContent = players.length;
+
+      players.forEach(player => {
+        const playerItem = document.createElement("div");
+        playerItem.className = `player-item ${player.id === activePlayerId ? 'active' : ''}`;
+        playerItem.dataset.playerId = player.id;
+
+        const colorDiv = document.createElement("div");
+        colorDiv.className = "player-color";
+        colorDiv.style.backgroundColor = player.color;
+
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "player-name";
+        nameSpan.textContent = player.name;
+
+        // Добавляем возможность редактирования имени
+        nameSpan.addEventListener('dblclick', () => {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'player-name-input';
+          input.value = player.name;
+          input.maxLength = 20;
+
+          input.addEventListener('blur', () => {
+            player.name = input.value.trim() || `Персонаж ${player.id}`;
+            renderPlayers();
+            saveState();
+          });
+
+          input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+              input.blur();
+            }
+          });
+
+          nameSpan.replaceWith(input);
+          input.focus();
+          input.select();
+        });
+
+        const countSpan = document.createElement("span");
+        countSpan.className = "player-count";
+        countSpan.textContent = player.professions.length;
+
+        playerItem.appendChild(colorDiv);
+        playerItem.appendChild(nameSpan);
+        playerItem.appendChild(countSpan);
+
+        playerItem.addEventListener("click", (e) => {
+          if (!e.target.classList.contains('player-name-input')) {
+            setActivePlayer(player.id);
+          }
+        });
+
+        playersList.appendChild(playerItem);
+      });
+
+      removePlayerBtn.disabled = players.length <= 1;
+    }
+
+    function setActivePlayer(playerId) {
+      activePlayerId = playerId;
+
+      playersList.querySelectorAll(".player-item").forEach(item => {
+        item.classList.toggle("active", parseInt(item.dataset.playerId) === playerId);
+      });
+
+      updateProfessionsSelection();
+      refreshProfessions();
+      saveState();
+    }
+
+    function addPlayer() {
+      if (players.length >= 8) return;
+
+      const newId = players.length > 0 ? Math.max(...players.map(p => p.id)) + 1 : 1;
+      const newPlayer = {
+        id: newId,
+        name: `Персонаж ${newId}`,
+        color: playerColors[(newId - 1) % playerColors.length],
+        professions: []
+      };
+
+      players.push(newPlayer);
+      renderPlayers();
+      setActivePlayer(newId);
+    }
+
+    function removePlayer() {
+      if (players.length <= 1) return;
+
+      const playerIndex = players.findIndex(p => p.id === activePlayerId);
+      players.splice(playerIndex, 1);
+
+      if (players.length > 0) {
+        setActivePlayer(players[0].id);
+      }
+
+      renderPlayers();
+    }
+
+    function updateProfessionsSelection() {
+      const activePlayer = players.find(p => p.id === activePlayerId);
+      if (!activePlayer) return;
+
+      container.querySelectorAll("input[type='checkbox']").forEach(cb => {
+        cb.checked = activePlayer.professions.includes(cb.value);
+      });
+    }
+
+    // ====== Рендер профессий ======
+    function createDayBadge(prof) {
+      const day = professionDays[prof] || 0;
+      const stage = day <= 4 ? 1 : day <= 14 ? 2 : 3;
+      const badge = document.createElement("span");
+      badge.className = `day-badge stage-${stage}`;
+      badge.textContent = day;
+      badge.title = `День открытия: ${day}`;
+      return badge;
+    }
+
+    function renderMainProfessions() {
+      container.innerHTML = "";
+      for (const [catName, profs] of Object.entries(categories)) {
+        const catDiv = document.createElement("div");
+        catDiv.className = "category";
+
+        const header = document.createElement("div");
+        header.className = "category-header";
+        header.textContent = catName;
+        catDiv.appendChild(header);
+
+        const listDiv = document.createElement("div");
+        listDiv.className = "prof-list";
+
+        profs.forEach(prof => {
+          const label = document.createElement("label");
+          label.className = "prof-item";
+          label.id = `prof-${prof}`;
+
+          const contentDiv = document.createElement("div");
+          contentDiv.className = "prof-item-content";
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.value = prof;
+
+          const span = document.createElement("span");
+          span.textContent = prof;
+
+          contentDiv.appendChild(checkbox);
+          contentDiv.appendChild(span);
+          label.appendChild(contentDiv);
+
+          // Добавляем индикаторы конфликтов
+          const indicatorsDiv = document.createElement("div");
+          indicatorsDiv.className = "conflict-indicators";
+          indicatorsDiv.id = `conflict-${prof}`;
+          label.appendChild(indicatorsDiv);
+
+          label.appendChild(createDayBadge(prof));
+
+          checkbox.addEventListener("change", () => {
+            updatePlayerProfession(prof, checkbox.checked);
+            refreshProfessions();
+            saveState();
+          });
+
+          listDiv.appendChild(label);
+        });
+
+        catDiv.appendChild(listDiv);
+        container.appendChild(catDiv);
+      }
+    }
+
+    function renderServerProfessions() {
+      serverList.innerHTML = "";
+      for (const [catName, profs] of Object.entries(categories)) {
+        const catDiv = document.createElement("div");
+        catDiv.style.display = "flex";
+        catDiv.style.flexWrap = "wrap";
+        catDiv.style.gap = "6px";
+        catDiv.style.marginBottom = "4px";
+
+        profs.forEach(prof => {
+          const label = document.createElement("label");
+          label.className = "server-item";
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.value = prof;
+
+          const span = document.createElement("span");
+          span.textContent = prof;
+
+          label.appendChild(checkbox);
+          label.appendChild(span);
+          label.appendChild(createDayBadge(prof));
+
+          checkbox.addEventListener("change", () => {
+            refreshProfessions();
+            saveState();
+          });
+
+          catDiv.appendChild(label);
+        });
+        serverList.appendChild(catDiv);
+      }
+    }
+
+    function updatePlayerProfession(profession, isSelected) {
+      const activePlayer = players.find(p => p.id === activePlayerId);
+      if (!activePlayer) return;
+
+      if (isSelected) {
+        if (!activePlayer.professions.includes(profession)) {
+          activePlayer.professions.push(profession);
+        }
+      } else {
+        activePlayer.professions = activePlayer.professions.filter(p => p !== profession);
+      }
+
+      renderPlayers();
+    }
+
+    function updateConflictVisualization() {
+      const activePlayer = players.find(p => p.id === activePlayerId);
+      if (!activePlayer) return;
+
+      // Собираем все выбранные профессии всех персонажей
+      const allSelectedProfs = new Map();
+      players.forEach(player => {
+        player.professions.forEach(prof => {
+          if (!allSelectedProfs.has(prof)) {
+            allSelectedProfs.set(prof, []);
+          }
+          allSelectedProfs.get(prof).push(player);
+        });
+      });
+
+      // Очищаем все визуализации конфликтов
+      container.querySelectorAll(".prof-item").forEach(item => {
+        item.classList.remove("conflict");
+        // Удаляем старые оверлеи
+        const oldOverlay = item.querySelector(".conflict-overlay");
+        const oldGradient = item.querySelector(".gradient-overlay");
+        if (oldOverlay) oldOverlay.remove();
+        if (oldGradient) oldGradient.remove();
+
+        // Очищаем индикаторы
+        const indicatorsDiv = item.querySelector(".conflict-indicators");
+        if (indicatorsDiv) indicatorsDiv.innerHTML = "";
+      });
+
+      // Для каждой профессии активного персонажа находим конфликты
+      activePlayer.professions.forEach(prof => {
+        if (conflicts[prof]) {
+          conflicts[prof].forEach(conflictedProf => {
+            const playersWithConflict = allSelectedProfs.get(conflictedProf) || [];
+
+            playersWithConflict.forEach(player => {
+              if (player.id !== activePlayerId) {
+                const item = document.getElementById(`prof-${conflictedProf}`);
+                if (item && !item.classList.contains("selected") && !item.classList.contains("other-player-selected")) {
+                  visualizeConflict(item, [player], `Конфликт с ${player.name} (${prof} ↔ ${conflictedProf})`);
+                }
+              }
+            });
+          });
+        }
+      });
+
+      // Также показываем конфликты для профессий, которые активный персонаж хочет выбрать
+      container.querySelectorAll(".prof-item").forEach(item => {
+        const cb = item.querySelector("input[type='checkbox']");
+        const profName = cb.value;
+
+        if (!cb.checked && conflicts[profName] && !item.classList.contains("other-player-selected")) {
+          const conflictPlayers = [];
+          let conflictInfo = "";
+
+          conflicts[profName].forEach(conflictedProf => {
+            const playersWithConflict = allSelectedProfs.get(conflictedProf) || [];
+            playersWithConflict.forEach(player => {
+              if (player.id !== activePlayerId && !conflictPlayers.find(p => p.id === player.id)) {
+                conflictPlayers.push(player);
+                conflictInfo += `Конфликт с ${player.name} (${profName} ↔ ${conflictedProf})\n`;
+              }
+            });
+          });
+
+          if (conflictPlayers.length > 0) {
+            visualizeConflict(item, conflictPlayers, conflictInfo.trim());
+          }
+        }
+      });
+    }
+
+    function visualizeConflict(item, conflictPlayers, tooltipText) {
+      item.classList.add("conflict");
+
+      // Создаем градиентную заливку для множественных конфликтов
+      if (conflictPlayers.length === 1) {
+        // Один конфликт - сплошной цвет
+        const overlay = document.createElement("div");
+        overlay.className = "conflict-overlay";
+        overlay.style.backgroundColor = conflictPlayers[0].color;
+        overlay.title = tooltipText;
+        item.appendChild(overlay);
+      } else {
+        // Несколько конфликтов - градиент
+        const gradient = document.createElement("div");
+        gradient.className = "gradient-overlay";
+
+        // Создаем линейный градиент из цветов конфликтующих персонажей
+        const gradientColors = conflictPlayers.map(player => player.color);
+        gradient.style.background = `linear-gradient(90deg, ${gradientColors.join(', ')})`;
+        gradient.title = tooltipText;
+        item.appendChild(gradient);
+      }
+
+      // Добавляем индикаторы (точки) для быстрой идентификации
+      const indicatorsDiv = item.querySelector(".conflict-indicators");
+      if (indicatorsDiv) {
+        conflictPlayers.forEach(player => {
+          const indicator = document.createElement("div");
+          indicator.className = "conflict-indicator";
+          indicator.style.backgroundColor = player.color;
+
+          const tooltip = document.createElement("div");
+          tooltip.className = "conflict-tooltip";
+          tooltip.textContent = `Конфликт с ${player.name}`;
+
+          indicator.appendChild(tooltip);
+          indicatorsDiv.appendChild(indicator);
+        });
+      }
+    }
+
+    // ====== Тема ======
+    function toggleTheme() {
+      const currentTheme = document.body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.body.setAttribute('data-theme', newTheme);
+      updateThemeButton();
+      saveState();
+    }
+
+    function updateThemeButton() {
+      const currentTheme = document.body.getAttribute('data-theme') || 'light';
+      const icon = currentTheme === 'dark' ? '☀️' : '🌙';
+      const text = currentTheme === 'dark' ? 'Светлая тема' : 'Тёмная тема';
+      themeToggle.innerHTML = `<span>${icon}</span> ${text}`;
+    }
+
+    themeToggle.addEventListener('click', toggleTheme);
+
+    // ====== Основная логика ======
+    function refreshProfessions() {
+      const showAll = showAllToggle.checked;
+      const serverDayValue = serverDayInput.value.trim();
+      const serverDay = serverDayValue === '' ? -1 : parseInt(serverDayValue, 10);
+
+      const selectedServerProfs = Array.from(serverList.querySelectorAll("input[type='checkbox']:checked")).map(cb => cb.value);
+      const activePlayer = players.find(p => p.id === activePlayerId);
+      const selectedMainProfs = activePlayer ? activePlayer.professions : [];
+
+      // Собираем все профессии, выбранные другими персонажами
+      const otherPlayersProfs = new Map();
+      players.forEach(player => {
+        if (player.id !== activePlayerId) {
+          player.professions.forEach(prof => {
+            if (!otherPlayersProfs.has(prof)) {
+              otherPlayersProfs.set(prof, []);
+            }
+            otherPlayersProfs.get(prof).push(player);
+          });
+        }
+      });
+
+      // Находим конфликтующие профессии для активного персонажа
+      const disabledProfs = new Set();
+
+      // ИСПРАВЛЕНИЕ БАГА: учитываем только конфликты с выбранными профессиями активного персонажа
+      selectedMainProfs.forEach(sel => {
+        if (conflicts[sel]) {
+          conflicts[sel].forEach(c => {
+            // Добавляем в заблокированные только если эта профессия не выбрана активным персонажем
+            if (!selectedMainProfs.includes(c)) {
+              disabledProfs.add(c);
+            }
+          });
+        }
+      });
+
+      // --- Основной список ---
+      container.querySelectorAll(".prof-item").forEach(item => {
+        const cb = item.querySelector("input[type='checkbox']");
+        const profName = cb.value;
+        const day = professionDays[profName] || 0;
+
+        // Сбрасываем все классы и состояния
+        item.classList.remove("server-prof", "selected", "disabled", "hidden", "other-player-selected");
+        cb.disabled = false;
+
+        // Серверные профессии
+        if (selectedServerProfs.includes(profName)) {
+          cb.checked = false;
+          cb.disabled = true;
+          item.classList.add("server-prof");
+          item.style.display = 'flex';
+          return;
+        }
+
+        // Фильтрация по дню
+        if (!showAll && serverDay !== -1 && day > serverDay) {
+          item.style.display = 'none';
+          cb.checked = false;
+          return;
+        }
+
+        item.style.display = 'flex';
+
+        // Выбранные профессии активным персонажем
+        if (selectedMainProfs.includes(profName)) {
+          item.classList.add("selected");
+        }
+        // Профессии, выбранные другими персонажами (НОВОЕ: красное отображение с ПРИОРИТЕТОМ)
+        else if (otherPlayersProfs.has(profName)) {
+          item.classList.add("other-player-selected");
+          // Убираем любые конфликт-оверлеи для профессий, выбранных другими персонажами
+          const overlay = item.querySelector(".conflict-overlay");
+          const gradient = item.querySelector(".gradient-overlay");
+          if (overlay) overlay.remove();
+          if (gradient) gradient.remove();
+        }
+
+        // Заблокированные профессии (конфликтующие с выбранными текущим персонажем)
+        if (disabledProfs.has(profName) && !selectedMainProfs.includes(profName)) {
+          item.classList.add("disabled");
+          cb.disabled = true; // Блокируем выбор
+        }
+      });
+
+      // --- Серверные профессии ---
+      serverList.querySelectorAll(".server-item").forEach(item => {
+        const cb = item.querySelector("input[type='checkbox']");
+        const profName = cb.value;
+        const day = professionDays[profName] || 0;
+
+        if (!showAll && serverDay !== -1 && day > serverDay) {
+          item.style.display = 'none';
+          cb.checked = false;
+          item.classList.remove("selected");
+        } else {
+          item.style.display = 'flex';
+          item.classList.toggle("selected", cb.checked);
+        }
+      });
+
+      // --- Блок заблокированных профессий ---
+      if (disabledProfs.size > 0) {
+        disabledBlock.style.display = "block";
+        disabledCount.textContent = disabledProfs.size;
+        disabledList.innerHTML = "";
+        disabledProfs.forEach(p => {
+          const li = document.createElement("li");
+          li.textContent = p;
+          disabledList.appendChild(li);
+        });
+      } else {
+        disabledBlock.style.display = "none";
+      }
+
+      // Обновляем визуализацию конфликтов (только для не-выбранных другими профессий)
+      updateConflictVisualization();
+
+      warningMessage.style.display = showAll ? 'block' : 'none';
+      dayControlGroup.classList.toggle('hidden', showAll);
+      serverCount.textContent = selectedServerProfs.length;
+    }
+
+    // ====== Обработчики событий ======
+    function setupEventListeners() {
+      serverDayInput.addEventListener('input', () => {
+        refreshProfessions();
+        saveState();
+      });
+
+      showAllToggle.addEventListener('change', () => {
+        refreshProfessions();
+        saveState();
+      });
+
+      addPlayerBtn.addEventListener('click', addPlayer);
+      removePlayerBtn.addEventListener('click', removePlayer);
+
+      resetBtn.addEventListener('click', () => {
+        players.forEach(player => {
+          player.professions = [];
+        });
+
+        serverList.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+        serverDayInput.value = '';
+        showAllToggle.checked = false;
+
+        renderPlayers();
+        refreshProfessions();
+        saveState();
+      });
+
+      document.addEventListener('change', (e) => {
+        if (e.target.type === 'checkbox') {
+          setTimeout(() => {
+            refreshProfessions();
+            saveState();
+          }, 10);
+        }
+      });
+    }
+
+    // ====== Инициализация ======
+    function init() {
+      renderMainProfessions();
+      renderServerProfessions();
+      renderPlayers();
+      setupEventListeners();
+      setupTutorialEventListeners();
+      loadState();
+      updateThemeButton();
+
+      // Показываем туториал при первой загрузке
+      setTimeout(showTutorial, 500);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+
+</html>
